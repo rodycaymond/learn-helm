@@ -1,0 +1,37 @@
+ui:
+  port: 8000
+  targetPort: 80
+  image: rodycaymond/test-image-suite
+  tag: latest
+  name: frontend
+
+api:
+  port: 8080
+  targetPort: 8080
+  image: rodycaymond/test-api
+  tag: latest
+  name: backend
+  environment:
+    TEST: "BONG"
+
+db:
+  image: postgres
+  tag: latest
+  serviceName: postgres
+  port: 5432
+  targetPort: 5423
+  DB_NAME: test_database
+  DB_PORT: 5432
+  DB_USER: admin
+  DB_PASSWORD: password
+  DB_HOST: postgres
+
+ingress:
+  name: nginx-server
+  FRONTEND_HOST: frontend.default.svc.cluster.local
+  FRONTEND_PORT: 8000
+  BACKEND_HOST: backend.default.svc.cluster.local
+  BACKEND_PORT: 8080
+
+app:
+  name: test-app

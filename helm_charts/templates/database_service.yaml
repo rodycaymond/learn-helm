@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ .Values.db.serviceName }}"
+spec:
+  selector:
+    app: "{{ .Values.db.serviceName }}"
+  ports:
+    - port: 5432
+      targetPort: 5432
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: "{{ .Values.db.serviceName }}"
+spec:
+  selector:
+    matchLabels:
+      app: "{{ .Values.db.serviceName }}"
+  serviceName: "{{ .Values.db.serviceName }}"
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: "{{ .Values.db.serviceName }}"
+    spec:
+      containers:
+        - name: "{{ .Values.db.serviceName }}"
+          image: "{{ .Values.db.image }}:{{ .Values.db.tag }}"
+          ports:
+            - containerPort: 5432
+              name: database
+          env:
+            - name: POSTGRES_DB
+              value: "{{ .Values.db.DB_NAME }}"
+            - name: POSTGRES_USER
+              value: "{{ .Values.db.DB_USER }}"
+            - name: POSTGRES_PASSWORD
+              value: "{{ .Values.db.DB_PASSWORD }}"
+            - name: POSTGRES_PORT
+              value: "{{ .Values.db.DB_PORT }}"
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: "standard"
+        resources:
+          requests:
+            storage: 1Gi

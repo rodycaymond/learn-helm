@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ .Values.ui.name }}"
+spec:
+  selector:
+    matchLabels:
+      app: "{{ .Values.ui.name }}"
+  template:
+    metadata:
+      labels:
+        app: "{{ .Values.ui.name }}"
+    spec:
+      containers:
+        - name: "{{ .Values.ui.name }}"
+          image: "{{ .Values.ui.image }}:{{ .Values.ui.tag }}"
+          imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+          ports:
+            - containerPort: 8000

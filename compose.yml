@@ -1,0 +1,52 @@
+services:
+  ui:
+    image: test_ui
+    build:
+      context: .
+      dockerfile: containers/ui/Dockerfile
+    ports:
+      - 8000:80
+  api:
+    image: test_api
+    build:
+      context: .
+      dockerfile: containers/api/Dockerfile
+    ports:
+      - 8080:8080
+    environment:
+      TEST: "BONG"
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_HOST: postgres
+  nginx:
+    image: nginx:latest
+    restart: always
+    ports:
+      - 80:80
+    environment:
+      FRONTEND_PORT: ${FRONTEND_PORT}
+      FRONTEND_HOST: ${FRONTEND_HOST}
+      BACKEND_PORT: ${BACKEND_PORT}
+      BACKEND_HOST: ${BACKEND_HOST}
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    volumes:
+      - ./dev/nginx:/etc/nginx/templates:ro
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+    volumes:
+      - postgres_vol:/var/lib/postgresql/data
+
+volumes:
+  postgres_vol:
