@@ -20,6 +20,22 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_PORT: ${POSTGRES_PORT}
       POSTGRES_HOST: postgres
+
+  keycloak:
+    <<: *type
+    image: "quay.io/keycloak/keycloak:23.0"
+    container_name: keycloak
+    command:
+      - start-dev
+      - --import-realm
+    ports:
+      - ${KEYCLOAK_PORT}:8080
+    healthcheck:
+      test: timeout 10s bash -c ':> /dev/tcp/localhost/8080'
+      start_interval: 10s
+    volumes:
+      - ./dev/keycloak:/opt/keycloak/data/import
+
   nginx:
     image: nginx:latest
     restart: always

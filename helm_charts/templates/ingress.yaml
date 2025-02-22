@@ -2,8 +2,12 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: "{{ .Values.ingress.name }}"
+  annotations:
+    alb.ingress.kubernetes.io/auth-type: "keycloak-oidc"
+    alb.ingress.kubernetes.io/auth-idp-oidc: '{"issuer": "https://keycloak.zeus.socom.dev/realms/zeus-apps", "authenticationEndoint": "", "secretName": "my-auth-secret"}'
+    alb.ingress.kubernetes.io/auth-on-unauthenticated-request: authenticate 
 spec:
-  ingressClassName: nginx
+  ingressClassName: alb
   rules:
     - host: helm.test.cody
       http:
@@ -22,12 +26,3 @@ spec:
                 name: "{{ .Values.api.name }}"
                 port:
                   number: 8080
-  env:
-    - name: FRONTEND_HOST
-      value: "{{ .Values.ingress.FRONTEND_HOST }}"
-    - name: FRONTEND_PORT
-      value: "{{ .Values.ingress.FRONTEND_PORT }}"
-    - name: BACKEND_HOST
-      value: "{{ .Values.ingress.BACKEND_HOST }}"
-    - name: BACKEND_PORT
-      value: "{{ .Values.ingress.BACKEND_PORT }}"
