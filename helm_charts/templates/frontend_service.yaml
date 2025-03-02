@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: "{{ .Values.ui.name }}"
+  name: {{ .Values.ui.name }}
 spec:
   selector:
-    app: "{{ .Values.ui.name }}"
+    app: {{ .Values.ui.name }}
   ports:
-    - port: 8000
+    - port: {{ .Values.ui.port }}
       targetPort: 80
   type: LoadBalancer

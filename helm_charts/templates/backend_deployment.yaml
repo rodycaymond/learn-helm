@@ -1,27 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: "{{ .Values.api.name }}"
+  name: {{ .Values.api.name }}
 spec:
   selector:
     matchLabels:
-      app: "{{ .Values.api.name }}"
+      app: {{ .Values.api.name }}
   template:
     metadata:
       labels:
-        app: "{{ .Values.api.name }}"
+        app: {{ .Values.api.name }}
     spec:
-      initContainers:
-        - name: check-db-ready
-          image: "{{ .Values.db.image}}:{{ .Values.db.tag }}"
-          command: [
-              "sh",
-              "-c",
-              "until pg_isready -h {{ .Values.db.DB_HOST }} -p 5432;
-              do echo waiting for database; sleep 2; done;",
-            ]
       containers:
-        - name: "{{ .Values.api.name }}"
+        - name: {{ .Values.api.name }}
           image: "{{ .Values.api.image }}:{{ .Values.api.tag }}"
           imagePullPolicy: IfNotPresent
           resources:
@@ -29,17 +20,17 @@ spec:
               memory: "1Gi"
               cpu: "500m"
           ports:
-            - containerPort: 8080
+            - containerPort: {{ .Values.api.port }}
           env:
             - name: TEST
-              value: "{{ .Values.api.environment.TEST }}"
+              value: {{ .Values.api.environment.TEST | quote }}
             - name: POSTGRES_DB
-              value: "{{ .Values.db.DB_NAME }}"
+              value: {{ .Values.db.DB_NAME | quote }}
             - name: POSTGRES_USER
-              value: "{{ .Values.db.DB_USER }}"
+              value: {{ .Values.db.DB_USER | quote }}
             - name: POSTGRES_PASSWORD
-              value: "{{ .Values.db.DB_PASSWORD }}"
+              value: {{ .Values.db.DB_PASSWORD | quote }}
             - name: POSTGRES_PORT
-              value: "{{ .Values.db.DB_PORT }}"
+              value: {{ .Values.db.DB_PORT | quote }}
             - name: POSTGRES_HOST
-              value: "{{ .Values.db.DB_HOST }}"
+              value: {{ .Values.db.DB_HOST | quote }}

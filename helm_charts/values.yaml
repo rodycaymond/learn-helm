@@ -27,41 +27,7 @@ db:
   DB_HOST: postgres
 
 ingress:
-  name: nginx-server
-  FRONTEND_HOST: frontend.default.svc.cluster.local
-  FRONTEND_PORT: 8000
-  BACKEND_HOST: backend.default.svc.cluster.local
-  BACKEND_PORT: 8080
+  name: nginx-ingress
 
 app:
   name: test-app
-
-config:
-  configFile: |-
-    # Client configs
-    redirect_url=               "/oauth2/callback"
-    oidc_issuer_url=            "https://keycloak.test.cody/realms/zeus-apps"
-    client_id=                  "test-app"
-    client_secret=              "52f81DodPlYafGR23xJenW6UXizwOv0H"
-    cookie_secret=              "68W9GCfJxthaPQFZ3itOJ48HBNFzDTt0iZtfP1L8YjI="
-    cookie_name=                "__Secure-oauth_proxy_test-app"
-    upstreams=                  "http://helm.test.cody"
-
-    # Allowed roles configs
-    allowed_roles=               ["test-app:OWNER", "test-app:DEVELOPER", "test-app:GUEST"]
-    allowed_groups=              ["*"]
-
-    # Redis configs
-    redis_connection_url=       "redis://redis:6379"
-    session_store_type=         "redis"
-
-    # Cookie confs
-    cookie_refresh=             "60s"
-    cookie_secure=              "true"
-
-    # Additional configs
-    provider=                   "keycloak-oidc"
-    email_domains=              ["*"]
-    http_address=               "0.0.0.0:4180"
-    reverse_proxy=              "true"
-    set_authorization_header=   "true"
