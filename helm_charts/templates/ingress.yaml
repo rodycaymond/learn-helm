@@ -22,3 +22,10 @@ spec:
                 name: backend
                 port:
                   number: 8080
+          - pathType: Prefix
+            path: /oauth2
+            backend:
+              service:
+                name: oauth2proxy
+                port:
+                  number: 4180

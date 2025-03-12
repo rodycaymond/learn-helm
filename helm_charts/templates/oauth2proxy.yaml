@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: oauth2proxy
+spec:
+  selector:
+    app: oauth2proxy
+  ports:
+  - port: 4180
+    targetPort: 4180
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oauth2proxy-deployment
+spec:
+  selector:
+    matchLabels:
+      app: oauth2proxy-deployment
+  template:
+    metadata:
+      labels:
+        app: oauth2proxy-deployment
+    spec:
+      containers:
+      - name: oauth2proxy-deployment
+        image: docker.io/bitnami/oauth2-proxy:7.6.0
+        args: ["--redirect-url=http://helm.test.cody/oauth2/callback", "--cookie-refresh=60s", "--provider=keycloak-oidc", "--cookie-secure=false", "--email-domain=*", "--http-address=0.0.0.0:4180", "--set-authorization-header=true"]
+        env:
+          - name: OAUTH2_PROXY_CLIENT_ID
+            value: generator-app
+          - name: OAUTH2_PROXY_CLIENT_SECRET
+            value: 52f81DodPlYafGR23xJenW6UXizwOv0H
+          - name: OAUTH2_PROXY_UPSTREAMS
+            value: http://helm.test.cody
+          - name: OAUTH2_PROXY_COOKIE_NAME
+            value: oauth2_proxy
+          - name: OAUTH2_PROXY_OIDC_ISSUER_URL
+            value: http://localhost:8080/realms/zeus-apps
+          - name: OAUTH2_PROXY_COOKIE_SECRET
+            value: "68W9GCfJxthaPQFZ3itOJ48HBNFzDTt0iZtfP1L8YjI="
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 4180
+
